@@ -11,12 +11,12 @@ class AnaFile:
                 lines = []
                 for line in io.TextIOWrapper(file, 'iso8859-1'):
                     if line == '\n':
-                        self.header = header_count
-                    lines.append(line)
+                        self.header = header_count # saves the number of the line with the header
+                    lines.append(line) # saves the lines with informations about the file
                     header_count += 1
                 if self.header == None:
                     print('Header end line not found.')
-                else:
+                else: # the part below takes usefull information from the file, such as station code and legend
                     self.head = lines[:self.header]                    
                     head = ''
                     for line in self.head:
@@ -24,11 +24,14 @@ class AnaFile:
                             head += line.strip('//') + '\n'
                         if 'Código da Estação' in line:
                             self.station = line.strip('\n').split(':')[-1]
-                    self.head = head
+                    self.head = head # saves the informations of the file in self.head, print it and you'll see.
                 self.data_type = file_name.lower()
         self.name = file_name
        
     def get_df(self):
+        """This method reads a csv file as a pandas DataFrame and
+           returns it (it also sets self.df as the DataFrame object)"""
+
         with zipfile.ZipFile(self.name + '.zip') as ana_zip:
             with ana_zip.open(self.name + '.txt') as file:
                 self.df = pd.read_csv(file, header=self.header, sep=';',
@@ -41,3 +44,6 @@ class AnaFile:
                                       
     def save_df(self):
         self.df.to_csv(self.data_type + '_' + self.station)
+
+    # methods for plotting frequently used graphs:
+

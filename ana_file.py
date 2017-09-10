@@ -32,8 +32,9 @@ class AnaFile:
         self.name = file_name
        
     def get_df(self):
-        """This method reads a csv file as a pandas DataFrame and
-           returns it (it also sets self.df as the DataFrame object)"""
+        """This method reads a csv file as a pandas DataFrame set the index as
+        a datetime index and sets self.df as the DataFrame object.
+        Currently ignoring the time column."""
 
         with zipfile.ZipFile(self.name + '.zip') as ana_zip:
             with ana_zip.open(self.name + '.txt') as file:
@@ -42,8 +43,8 @@ class AnaFile:
                                       parse_dates=['Data'], dayfirst=True)
                 self.df.rename(columns={'//EstacaoCodigo':'CodigoEstação'},
                                         inplace=True)
-                self.df.sort_values(by='Data', inplace=True)
-                return self.df
+                self.df.index = self.df['Data']
+                self.df.sort_index(inplace=True)
                                       
     def save_df(self):
         self.df.to_csv(self.data_type + '_' + self.station)
@@ -51,7 +52,7 @@ class AnaFile:
     # methods for plotting frequently used graphs:
     def plot_line(self):
         """This method plots the graphs of the Dataframe"""
-        self.df=self.get_df()
+        self.get_df()
         #Plots NivelConsistencia 1 and 2
         trace0=go.Scatter(x=self.df.Data[self.df.NivelConsistencia==1],
                           y=self.df.Maxima[self.df.NivelConsistencia==1],

@@ -42,7 +42,7 @@ class AnaFile:
                                       decimal=',', encoding='iso8859-1')
                 self.df.rename(columns={'//EstacaoCodigo':'CodigoEstação'},
                                         inplace=True)
-                if not pd.isnull(self.df['Hora']).all():
+                if not pd.isnull(self.df['Hora']).all(): # treat exceptions
                     self.df['temp'] = ''
                     for i in range(len(self.df)):
                         self.df.loc[i, 'temp'] = self.df.loc[i, 'Data'] + ' ' + self.df.loc[i, 'Hora'][-8:]

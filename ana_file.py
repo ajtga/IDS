@@ -35,7 +35,7 @@ class AnaFile:
                         if len(line) > 4 and '//---' not in line:
                             self.head += line.strip('//') + '\n'
                         if 'Código da Estação' in line:
-                            self.station = line.strip('\n').split(':')[-1]
+                            self.station = int(line.strip('\n').split(':')[-1])
 
     @staticmethod
     def concat_datetime(row):

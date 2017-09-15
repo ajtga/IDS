@@ -45,9 +45,8 @@ class AnaFile:
         return row['Data'] + ' ' + row['Hora'][-8:]
 
     def get_df(self):
-        """This method reads a csv file as a pandas DataFrame set the index as
-        a datetime index and sets self.df as the DataFrame object.
-        Currently ignoring the time column."""
+        """ This method reads a csv file as a pandas DataFrame, sets it's index as
+        datetime64 and sets the result as self.df. """
 
         self.df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
         self.df.rename(columns={'//EstacaoCodigo': 'CodigoEstação'},

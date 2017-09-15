@@ -9,6 +9,13 @@ import plotly.graph_objs as go
 class AnaFile:
 
     def __init__(self, file_name):
+        self.name = file_name
+        self.station = None
+        self.data_type = file_name.lower()
+        self.header = None
+        self.head = None
+        self.df = None
+
         with zipfile.ZipFile(file_name + '.zip') as ana_zip:
             with ana_zip.open(file_name + '.txt') as file:
                 header_count = 0
@@ -18,19 +25,18 @@ class AnaFile:
                         self.header = header_count  # saves the number of the line with the header
                     lines.append(line)  # saves the lines with information about the file
                     header_count += 1
+
                 if self.header is None:
                     print('Header end line not found.')
+
                 else:  # the part below takes useful information from the file, such as station code and legend
-                    self.head = lines[:self.header]
-                    head = ''
-                    for line in self.head:
+                    self.head = ''
+                    head = lines[:self.header]
+                    for line in head:
                         if len(line) > 4 and '//---' not in line:
-                            head += line.strip('//') + '\n'
+                            self.head += line.strip('//') + '\n'
                         if 'Código da Estação' in line:
                             self.station = line.strip('\n').split(':')[-1]
-                    self.head = head  # saves the information of the file in self.head, print it and you'll see.
-                self.data_type = file_name.lower()
-        self.name = file_name
 
     def get_df(self):
         """This method reads a csv file as a pandas DataFrame set the index as

@@ -69,7 +69,8 @@ class AnaFile:
     def plot_line(self):
         """This method plots a line graph of the DataFrame"""
 
-        self.get_df()
+        if self.df is None:
+            self.get_df()
 
         # Plots 'NivelConsistencia' 1 and 2:
 

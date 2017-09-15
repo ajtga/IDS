@@ -40,7 +40,7 @@ class AnaFile:
     @staticmethod
     def concat_datetime(row):
         """ This method takes str from 'Data' and 'Hora', then concatenate and returns it."""
-        
+
         # CAN parse_dates DO THE SAME WHEN COMBINING COLUMNS?
         return row['Data'] + ' ' + row['Hora'][-8:]
 
@@ -49,23 +49,20 @@ class AnaFile:
         a datetime index and sets self.df as the DataFrame object.
         Currently ignoring the time column."""
 
-        with zipfile.ZipFile(self.name + '.zip') as ana_zip:
-            with ana_zip.open(self.name + '.txt') as file:
-                self.df = pd.read_csv(file, header=self.header, sep=';',
-                                      decimal=',', encoding='iso8859-1')
-                self.df.rename(columns={'//EstacaoCodigo': 'CodigoEstação'},
-                               inplace=True)
-                if not pd.isnull(self.df['Hora']).all():  # treat exceptions
-                    self.df['temp'] = ''
-                    for i in range(len(self.df)):
-                        self.df.loc[i, 'temp'] = self.df.loc[i, 'Data'] + ' ' + self.df.loc[i, 'Hora'][-8:]
-                    self.df.index = list(pd.to_datetime(self.df['temp'], dayfirst=True))
-                    del(self.df['temp'], self.df['Data'], self.df['Hora'])
-                    self.df.sort_index(inplace=True)
-                else:
-                    self.df.index = list(pd.to_datetime(self.df['Data'], dayfirst=True))
-                    del(self.df['Hora'], self.df['Data'])
-                    self.df.sort_index(inplace=True)
+        self.df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
+        self.df.rename(columns={'//EstacaoCodigo': 'CodigoEstação'},
+                       inplace=True)
+        if not pd.isnull(self.df['Hora']).all():  # treat exceptions
+            self.df['temp'] = ''
+            for i in range(len(self.df)):
+                self.df.loc[i, 'temp'] = self.df.loc[i, 'Data'] + ' ' + self.df.loc[i, 'Hora'][-8:]
+            self.df.index = list(pd.to_datetime(self.df['temp'], dayfirst=True))
+            del(self.df['temp'], self.df['Data'], self.df['Hora'])
+            self.df.sort_index(inplace=True)
+        else:
+            self.df.index = list(pd.to_datetime(self.df['Data'], dayfirst=True))
+            del(self.df['Hora'], self.df['Data'])
+            self.df.sort_index(inplace=True)
 
     def save_df(self):
         self.df.to_csv(self.name.lower() + '_' + self.station)

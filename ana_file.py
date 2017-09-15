@@ -75,13 +75,13 @@ class AnaFile:
 
         trace0 = go.Scatter(x=self.df.index[self.df.NivelConsistencia == 1],
                             y=self.df.Maxima[self.df.NivelConsistencia == 1],
-                            name="Max NC=1")
+                            name="Raw")
         trace1 = go.Scatter(x=self.df.index[self.df.NivelConsistencia == 2],
                             y=self.df.Maxima[self.df.NivelConsistencia == 2],
-                            name="Max NC=2")
+                            name="Consistent")
         data = [trace0, trace1]
         layout = dict(title='Station ' + str(self.station),
                       xaxis=dict(title='Date'),
-                      yaxis=dict(title='Data'),
+                      yaxis=dict(title='Maximum Flow (m³/s)'),
                       )
         plotly.offline.plot({'data': data, 'layout': layout})

@@ -11,7 +11,6 @@ class AnaFile:
     def __init__(self, file_name):
         self.name = file_name
         self.station = None
-        self.data_type = file_name.lower()
         self.header = None
         self.head = None
         self.df = None
@@ -62,7 +61,7 @@ class AnaFile:
                     self.df.sort_index(inplace=True)
 
     def save_df(self):
-        self.df.to_csv(self.data_type + '_' + self.station)
+        self.df.to_csv(self.name.lower() + '_' + self.station)
 
     # Methods for plotting frequently used graphs:
     def plot_line(self):

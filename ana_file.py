@@ -53,11 +53,9 @@ class AnaFile:
         self.df.rename(columns={'//EstacaoCodigo': 'CodigoEstação'},
                        inplace=True)
         if not pd.isnull(self.df['Hora']).all():  # treat exceptions
-            self.df['temp'] = ''
-            for i in range(len(self.df)):
-                self.df.loc[i, 'temp'] = self.df.loc[i, 'Data'] + ' ' + self.df.loc[i, 'Hora'][-8:]
-            self.df.index = list(pd.to_datetime(self.df['temp'], dayfirst=True))
-            del(self.df['temp'], self.df['Data'], self.df['Hora'])
+            self.df['Datetime'] = self.df.apply(self.concat_datetime, axis=1)
+            self.df.index = pd.to_datetime(self.df['Datetime'], dayfirst=True)
+            del (self.df['Datetime'], self.df['Data'], self.df['Hora'])
             self.df.sort_index(inplace=True)
         else:
             self.df.index = list(pd.to_datetime(self.df['Data'], dayfirst=True))

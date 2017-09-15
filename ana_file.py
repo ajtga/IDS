@@ -80,7 +80,7 @@ class AnaFile:
                             y=self.df.Maxima[self.df.NivelConsistencia == 2],
                             name="Max NC=2")
         data = [trace0, trace1]
-        layout = dict(title='Station '+self.station,
+        layout = dict(title='Station ' + str(self.station),
                       xaxis=dict(title='Date'),
                       yaxis=dict(title='Data'),
                       )

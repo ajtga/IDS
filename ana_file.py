@@ -37,6 +37,13 @@ class AnaFile:
                         if 'Código da Estação' in line:
                             self.station = line.strip('\n').split(':')[-1]
 
+    @staticmethod
+    def concat_datetime(row):
+        """ This method takes str from 'Data' and 'Hora', then concatenate and returns it."""
+        
+        # CAN parse_dates DO THE SAME WHEN COMBINING COLUMNS?
+        return row['Data'] + ' ' + row['Hora'][-8:]
+
     def get_df(self):
         """This method reads a csv file as a pandas DataFrame set the index as
         a datetime index and sets self.df as the DataFrame object.

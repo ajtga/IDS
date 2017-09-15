@@ -5,6 +5,7 @@ import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
 
+
 class AnaFile:
 
     def __init__(self, file_name):
@@ -14,20 +15,20 @@ class AnaFile:
                 lines = []
                 for line in io.TextIOWrapper(file, 'iso8859-1'):
                     if line == '\n':
-                        self.header = header_count # saves the number of the line with the header
-                    lines.append(line) # saves the lines with informations about the file
+                        self.header = header_count  # saves the number of the line with the header
+                    lines.append(line)  # saves the lines with information about the file
                     header_count += 1
-                if self.header == None:
+                if self.header is None:
                     print('Header end line not found.')
-                else: # the part below takes usefull information from the file, such as station code and legend
+                else:  # the part below takes useful information from the file, such as station code and legend
                     self.head = lines[:self.header]
                     head = ''
                     for line in self.head:
-                        if len(line)>4 and '//---' not in line:
+                        if len(line) > 4 and '//---' not in line:
                             head += line.strip('//') + '\n'
                         if 'Código da Estação' in line:
                             self.station = line.strip('\n').split(':')[-1]
-                    self.head = head # saves the informations of the file in self.head, print it and you'll see.
+                    self.head = head  # saves the information of the file in self.head, print it and you'll see.
                 self.data_type = file_name.lower()
         self.name = file_name
 
@@ -40,9 +41,9 @@ class AnaFile:
             with ana_zip.open(self.name + '.txt') as file:
                 self.df = pd.read_csv(file, header=self.header, sep=';',
                                       decimal=',', encoding='iso8859-1')
-                self.df.rename(columns={'//EstacaoCodigo':'CodigoEstação'},
-                                        inplace=True)
-                if not pd.isnull(self.df['Hora']).all(): # treat exceptions
+                self.df.rename(columns={'//EstacaoCodigo': 'CodigoEstação'},
+                               inplace=True)
+                if not pd.isnull(self.df['Hora']).all():  # treat exceptions
                     self.df['temp'] = ''
                     for i in range(len(self.df)):
                         self.df.loc[i, 'temp'] = self.df.loc[i, 'Data'] + ' ' + self.df.loc[i, 'Hora'][-8:]
@@ -52,27 +53,28 @@ class AnaFile:
                 else:
                     self.df.index = list(pd.to_datetime(self.df['Data'], dayfirst=True))
                     del(self.df['Hora'], self.df['Data'])
-                    self.df.sort_index(inplace=True )
-
+                    self.df.sort_index(inplace=True)
 
     def save_df(self):
         self.df.to_csv(self.data_type + '_' + self.station)
 
-    # methods for plotting frequently used graphs:
+    # Methods for plotting frequently used graphs:
     def plot_line(self):
-        """This method plots a line graph of the Dataframe"""
-        self.get_df()
-        #Plots NivelConsistencia 1 and 2
-        trace0=go.Scatter(x=self.df.index[self.df.NivelConsistencia==1],
-                          y=self.df.Maxima[self.df.NivelConsistencia==1],
-                          name="Max NC=1")
-        trace1=go.Scatter(x=self.df.index[self.df.NivelConsistencia==2],
-                          y=self.df.Maxima[self.df.NivelConsistencia==2],
-                          name="Max NC=2")
-        data=[trace0,trace1]
+        """This method plots a line graph of the DataFrame"""
 
-        layout=dict(title='Estation '+self.station,
-                   xaxis=dict(title='Date'),
-                   yaxis=dict(title='Data'),
-                   )
-        plotly.offline.plot({'data':data, 'layout':layout})
+        self.get_df()
+
+        # Plots 'NivelConsistencia' 1 and 2:
+
+        trace0 = go.Scatter(x=self.df.index[self.df.NivelConsistencia == 1],
+                            y=self.df.Maxima[self.df.NivelConsistencia == 1],
+                            name="Max NC=1")
+        trace1 = go.Scatter(x=self.df.index[self.df.NivelConsistencia == 2],
+                            y=self.df.Maxima[self.df.NivelConsistencia == 2],
+                            name="Max NC=2")
+        data = [trace0, trace1]
+        layout = dict(title='Station '+self.station,
+                      xaxis=dict(title='Date'),
+                      yaxis=dict(title='Data'),
+                      )
+        plotly.offline.plot({'data': data, 'layout': layout})

@@ -26,7 +26,7 @@ class AnaFile:
                     header_count += 1
 
                 if self.header is None:
-                    print('Header end line not found.')
+                    print('Header not found.')
 
                 else:  # the part below takes useful information from the file, such as station code and legend
                     self.head = ''
@@ -36,6 +36,8 @@ class AnaFile:
                             self.head += line.strip('//') + '\n'
                         if 'Código da Estação' in line:
                             self.station = int(line.strip('\n').split(':')[-1])
+    def __str__(self):
+        return self.head
 
     @staticmethod
     def concat_datetime(row):

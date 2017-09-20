@@ -51,7 +51,7 @@ class AnaFile:
         datetime64 and sets the result as self.df. """
 
         self.df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
-        self.df.rename(columns={'//EstacaoCodigo': 'CodigoEstação'},
+        self.df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'},
                        inplace=True)
         try:
             if not pd.isnull(self.df['Hora']).all():  # treat exceptions

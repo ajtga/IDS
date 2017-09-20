@@ -60,11 +60,11 @@ class AnaFile:
                 del (self.df['Datetime'], self.df['Data'], self.df['Hora'])
                 self.df.sort_index(inplace=True)
             else:
-                self.df.index = list(pd.to_datetime(self.df['Data'], dayfirst=True))
+                self.df.index = pd.to_datetime(self.df['Data'], dayfirst=True)
                 del(self.df['Hora'], self.df['Data'])
                 self.df.sort_index(inplace=True)
         except KeyError:
-            self.df.index = list(pd.to_datetime(self.df['Data'], dayfirst=True))
+            self.df.index = pd.to_datetime(self.df['Data'], dayfirst=True)
             del(self.df['Data'])
             self.df.sort_index(inplace=True)
 

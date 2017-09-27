@@ -13,7 +13,6 @@ class AnaFile:
         self.station = None
         self.header = None
         self.head = None
-        self.df = None
 
         with zipfile.ZipFile(file_name + '.zip') as ana_zip:
             with ana_zip.open(file_name + '.txt') as file:
@@ -36,6 +35,8 @@ class AnaFile:
                             self.head += line.strip('//') + '\n'
                         if 'Código da Estação' in line:
                             self.station = int(line.strip('\n').split(':')[-1])
+        self.df = self.__get_df()
+
     def __str__(self):
         return self.head
 
@@ -46,27 +47,28 @@ class AnaFile:
         # CAN parse_dates DO THE SAME WHEN COMBINING COLUMNS?
         return row['Data'] + ' ' + row['Hora'][-8:]
 
-    def get_df(self):
+    def __get_df(self):
         """ This method reads a csv file as a pandas DataFrame, sets it's index as
-        datetime64 and sets the result as self.df. """
+        datetime64 and returns the result. """
 
-        self.df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
-        self.df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'},
-                       inplace=True)
+        df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
+        df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'}, inplace=True)
         try:
-            if not pd.isnull(self.df['Hora']).all():  # treat exceptions
-                self.df['Datetime'] = self.df.apply(self.concat_datetime, axis=1)
-                self.df.index = pd.to_datetime(self.df['Datetime'], dayfirst=True)
-                del (self.df['Datetime'], self.df['Data'], self.df['Hora'])
-                self.df.sort_index(inplace=True)
+            if not pd.isnull(df['Hora']).all():  # treat exceptions
+                df['Datetime'] = df.apply(self.concat_datetime, axis=1)
+                df.index = pd.to_datetime(df['Datetime'], dayfirst=True)
+                del (df['Datetime'], df['Data'], df['Hora'])
+                df.sort_index(inplace=True)
             else:
-                self.df.index = pd.to_datetime(self.df['Data'], dayfirst=True)
-                del(self.df['Hora'], self.df['Data'])
-                self.df.sort_index(inplace=True)
+                df.index = pd.to_datetime(df['Data'], dayfirst=True)
+                del(df['Hora'], df['Data'])
+                df.sort_index(inplace=True)
         except KeyError:
-            self.df.index = pd.to_datetime(self.df['Data'], dayfirst=True)
-            del(self.df['Data'])
-            self.df.sort_index(inplace=True)
+            df.index = pd.to_datetime(df['Data'], dayfirst=True)
+            del(df['Data'])
+            df.sort_index(inplace=True)
+
+        return df
 
     def save_df(self):
         options = ('JSON', 'CSV')
@@ -84,9 +86,6 @@ class AnaFile:
     # Methods for plotting frequently used graphs:
     def plot_line(self):
         """This method plots a line graph of the DataFrame"""
-
-        if self.df is None:
-            self.get_df()
 
         # Plots 'NivelConsistencia' 1 and 2:
 

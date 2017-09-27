@@ -69,7 +69,17 @@ class AnaFile:
             self.df.sort_index(inplace=True)
 
     def save_df(self):
-        self.df.to_csv(self.name.lower() + '_' + self.station)
+        options = ('JSON', 'CSV')
+        for i, option in enumerate(options):
+            print('%s - %s' % (i, option))
+        option = int(input('\nChoose an option: '))
+
+        if option == 0:
+            self.df.to_json(self.name.lower() + str(self.station) + '.json', date_format='iso')
+        elif option == 1:
+            self.df.to_csv(self.name.lower() + str(self.station) + '.csv')
+        else:
+            print('Invalid option. Try again.')
 
     # Methods for plotting frequently used graphs:
     def plot_line(self):

@@ -132,6 +132,6 @@ class AnaRain(AnaFile):
         data = [trace0, trace1]
         layout = dict(title='Station ' + str(self.station),
                       xaxis=dict(title='Date'),
-                      yaxis=dict(title='Maximum Flow (m³/s)'),
+                      yaxis=dict(title='Maximum Precipitation (mm)'),
                       )
         plotly.offline.plot({'data': data, 'layout': layout})

@@ -44,15 +44,15 @@ class AnaFile:
         """ This method reads a csv file as a pandas DataFrame, sets it's index as
         datetime64 and returns the result. """
 
-        df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
+        df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',', parse_dates=[2],
+                         dayfirst=True)
         df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'}, inplace=True)
         try:
-            df.index = pd.to_datetime(df['Data'], dayfirst=True)
-            del(df['Hora'], df['Data'])
+            df.set_index('Data', inplace=True)
+            del(df['Hora'])
             df.sort_index(inplace=True)
         except KeyError:
-            df.index = pd.to_datetime(df['Data'], dayfirst=True)
-            del(df['Data'])
+            df.set_index('Data', inplace=True)
             df.sort_index(inplace=True)
 
         return df

@@ -2,7 +2,6 @@ import pandas as pd
 import zipfile
 import io
 import plotly
-import plotly.plotly as py
 import plotly.graph_objs as go
 
 

@@ -40,13 +40,6 @@ class AnaFile:
     def __str__(self):
         return self.head
 
-    @staticmethod
-    def concat_datetime(row):
-        """ This method takes str from 'Data' and 'Hora', then concatenate and returns it."""
-
-        # CAN parse_dates DO THE SAME WHEN COMBINING COLUMNS?
-        return row['Data'] + ' ' + row['Hora'][-8:]
-
     def __get_df(self):
         """ This method reads a csv file as a pandas DataFrame, sets it's index as
         datetime64 and returns the result. """
@@ -54,15 +47,9 @@ class AnaFile:
         df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',')
         df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'}, inplace=True)
         try:
-            if not pd.isnull(df['Hora']).all():  # treat exceptions
-                df['Datetime'] = df.apply(self.concat_datetime, axis=1)
-                df.index = pd.to_datetime(df['Datetime'], dayfirst=True)
-                del (df['Datetime'], df['Data'], df['Hora'])
-                df.sort_index(inplace=True)
-            else:
-                df.index = pd.to_datetime(df['Data'], dayfirst=True)
-                del(df['Hora'], df['Data'])
-                df.sort_index(inplace=True)
+            df.index = pd.to_datetime(df['Data'], dayfirst=True)
+            del(df['Hora'], df['Data'])
+            df.sort_index(inplace=True)
         except KeyError:
             df.index = pd.to_datetime(df['Data'], dayfirst=True)
             del(df['Data'])

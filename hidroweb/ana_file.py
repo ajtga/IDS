@@ -4,9 +4,7 @@ import io
 import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
-import os
 
-os.chdir('.//piranhas00937023')
 
 class AnaFile:
 

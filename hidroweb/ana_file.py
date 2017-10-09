@@ -54,6 +54,7 @@ class AnaFlow(AnaFile):
     def __init__(self, file_name):
         super().__init__(file_name)
         self.df = super().get_df(self.date_index)
+        self.df.drop('Unnamed: 78', axis=1, inplace=True)
 
     @staticmethod
     def date_index(df):

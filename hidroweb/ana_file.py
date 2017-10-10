@@ -59,7 +59,10 @@ class AnaFlow(AnaFile):
     @staticmethod
     def date_index(df):
         df.set_index('Data', inplace=True)
-        del (df['Hora'])
+        try:
+            del (df['Hora'])
+        except:
+            pass
         df.sort_index(inplace=True)
 
     def save_df(self):

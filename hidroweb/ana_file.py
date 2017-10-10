@@ -19,14 +19,18 @@ class AnaFile:
                 lines = []
                 for line in io.TextIOWrapper(file, 'iso8859-1'):
                     if line == '\n':
-                        self.header = header_count  # saves the number of the line with the header
-                    lines.append(line)  # saves the lines with information about the file
+                        # saves the number of the line with the header
+                        self.header = header_count
+                    # saves the lines with information about the file
+                    lines.append(line)
                     header_count += 1
 
                 if self.header is None:
                     print('Header not found.')
 
-                else:  # the part below takes useful information from the file, such as station code and legend
+                # the part below takes useful information from the file,
+                # such as station code and legend
+                else:
                     self.head = ''
                     head = lines[:self.header]
                     for line in head:
@@ -39,11 +43,11 @@ class AnaFile:
         return self.head
 
     def get_df(self, date_index):
-        """ This method reads a csv file as a pandas DataFrame, sets it's index as
-        datetime64 and returns the result. """
+        """ This method reads a csv file as a pandas DataFrame, sets it's index
+        as datetime64 and returns the result. """
 
-        df = pd.read_csv(self.name + '.zip', header=self.header, sep=';', decimal=',', parse_dates=[2],
-                         dayfirst=True)
+        df = pd.read_csv(self.name + '.zip', header=self.header, sep=';',
+                         decimal=',', parse_dates=[2], dayfirst=True)
         df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'}, inplace=True)
         date_index(df)
         return df
@@ -72,7 +76,8 @@ class AnaFlow(AnaFile):
         option = int(input('\nChoose an option: '))
 
         if option == 0:
-            self.df.to_json(self.name.lower() + str(self.station) + '.json', date_format='iso')
+            self.df.to_json(self.name.lower() + str(self.station) + '.json',
+                            date_format='iso')
         elif option == 1:
             self.df.to_csv(self.name.lower() + str(self.station) + '.csv')
         else:
@@ -116,7 +121,8 @@ class AnaRain(AnaFile):
         option = int(input('\nChoose an option: '))
 
         if option == 0:
-            self.df.to_json(self.name.lower() + str(self.station) + '.json', date_format='iso')
+            self.df.to_json(self.name.lower() + str(self.station) + '.json',
+                            date_format='iso')
         elif option == 1:
             self.df.to_csv(self.name.lower() + str(self.station) + '.csv')
         else:

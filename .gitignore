@@ -8,3 +8,5 @@
 *.csv
 
 *.json
+
+hidroweb/__pycache__/

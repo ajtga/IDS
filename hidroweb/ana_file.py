@@ -5,6 +5,7 @@ import plotly
 import plotly.graph_objs as go
 
 
+#plotly.offline.init_notebook_mode()
 class AnaFile:
 
     def __init__(self, file_name):

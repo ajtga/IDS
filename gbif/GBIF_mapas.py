@@ -8,10 +8,26 @@ Created on Fri Oct  6 14:43:37 2017
 # %% Importando bibliotecas
 # %%
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 import numpy as np
-import plotly.plotly as py
+from plotly.graph_objs import *
+from plotly.offline import plot
+
+
+def mapa(df):
+    """Esta função usa das colunas latitude, longitudes e genus do dataframe
+    para projetar um mapa com as marcações de localização"""
+    mpt = 'pk.eyJ1IjoiYWRlbHNvbmpyIiwiYSI6ImNqNTV0czRkejBnMnkzMnBtdXdsbmRlbDcifQ.Ox8xbLTD_cD7h3uEz13avQ'
+
+    data = Data([Scattermapbox(lat=df.decimalLatitude, lon=df.decimalLongitude,
+    mode='markers', marker=Marker(size=10, color='rgb(0, 90, 40)'),
+    text=df.genus,)])
+    layout = Layout(autosize=True,hovermode='closest',
+    mapbox=dict(accesstoken=mpt,bearing=0,center=dict(lat=-9.62,lon=-37.7),
+    pitch=0,zoom=4, style='outdoors'),)
+    fig=dict(data=data,layout=layout)
+    plot(fig)
+
 
 # Definindo o diretório
 #
@@ -44,6 +60,8 @@ mag_sp.sort_values("species", inplace=True)
 # Criando um id para cada espécie
 # %%
 mag_sp['id'] = mag_sp.groupby("species").ngroup()
+
+mapa(mag_sp)
 
 # Removendo registros duplicados (coordenadas repetidas)
 # %%

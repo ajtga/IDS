@@ -3,6 +3,7 @@ import zipfile
 import io
 import plotly
 import plotly.graph_objs as go
+from datetime import datetime
 
 
 class AnaFile:
@@ -65,6 +66,25 @@ class AnaFlow(AnaFile):
         df.set_index('Data', inplace=True)
         del (df['Hora'])
         df.sort_index(inplace=True)
+
+    @staticmethod
+    def get_days(df, date):
+        i = list(df.index)
+        days = []
+        for day in i:
+            days.append(datetime(date.year, date.month, int(day[-2:])))
+        return days
+
+    def daily_df(self):
+        dates = list(self.df.index)
+        dfs = []
+        for date in dates:
+            flows = self.df.loc[date]['Vazao01':'Vazao31']
+            flows.dropna(inplace=True)
+            dates = self.get_days(flows, date)
+            dfs.append(pd.DataFrame(list(flows), index=dates,
+                                    columns=['Vazao']))
+        self.daily_flow = pd.concat(dfs, axis=0)
 
     def save_df(self):
         options = ('JSON', 'CSV')

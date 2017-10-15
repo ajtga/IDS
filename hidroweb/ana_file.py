@@ -58,13 +58,14 @@ class AnaFlow(AnaFile):
 
     def __init__(self, file_name):
         super().__init__(file_name)
-        self.df = super().get_df(self.date_index)
+        self.df = super().get_df(self.multi_index)
         self.df.drop('Unnamed: 78', axis=1, inplace=True)
 
     @staticmethod
-    def date_index(df):
-        df.set_index('Data', inplace=True)
-        del (df['Hora'])
+    def multi_index(df):
+        df.rename(columns={'NivelConsistencia': 'Consist.'}, inplace=True)
+        df.set_index(['Consist.', 'Data'], inplace=True)
+        del df['Hora']
         df.sort_index(inplace=True)
 
     @staticmethod

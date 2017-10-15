@@ -105,14 +105,19 @@ class AnaFlow(AnaFile):
         """This method plots a line graph of the DataFrame"""
 
         # Plots 'NivelConsistencia' 1 and 2:
-
-        trace0 = go.Scatter(x=self.df.index[self.df.NivelConsistencia == 1],
-                            y=self.df.Maxima[self.df.NivelConsistencia == 1],
-                            name="Raw")
-        trace1 = go.Scatter(x=self.df.index[self.df.NivelConsistencia == 2],
-                            y=self.df.Maxima[self.df.NivelConsistencia == 2],
-                            name="Consistent")
-        data = [trace0, trace1]
+        data = []
+        try:
+            trace0 = go.Scatter(x=self.df.loc[1].index,
+                                y=self.df.loc[1]['Maxima'],
+                                name="Raw")
+            data.append(trace0)
+        except KeyError:
+            print('Não há dados brutos no DataFrame.')
+        finally:
+            trace1 = go.Scatter(x=self.df.loc[2].index,
+                                y=self.df.loc[2]['Maxima'],
+                                name="Consistent")
+            data.append(trace1)
         layout = dict(title='Station ' + str(self.station),
                       xaxis=dict(title='Date'),
                       yaxis=dict(title='Maximum Flow (m³/s)'),

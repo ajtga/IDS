@@ -43,14 +43,14 @@ class AnaFile:
     def __str__(self):
         return self.head
 
-    def get_df(self, date_index):
+    def get_df(self, set_index):
         """ This method reads a csv file as a pandas DataFrame, sets it's index
         as datetime64 and returns the result. """
 
         df = pd.read_csv(self.name + '.zip', header=self.header, sep=';',
                          decimal=',', parse_dates=[2], dayfirst=True)
         df.rename(columns={'//EstacaoCodigo': 'EstacaoCodigo'}, inplace=True)
-        date_index(df)
+        set_index(df)
         return df
 
 
@@ -81,8 +81,8 @@ class AnaFlow(AnaFile):
         for date in dates:
             flows = self.df.loc[date]['Vazao01':'Vazao31']
             flows.dropna(inplace=True)
-            new_dates = self.get_days(flows, date)
-            dfs.append(pd.DataFrame(list(flows), index=new_dates,
+            dates = self.get_days(flows, date)
+            dfs.append(pd.DataFrame(list(flows), index=dates,
                                     columns=['Vazao']))
         self.daily_flow = pd.concat(dfs, axis=0)
 

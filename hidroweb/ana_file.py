@@ -81,8 +81,8 @@ class AnaFlow(AnaFile):
         for date in dates:
             flows = self.df.loc[date]['Vazao01':'Vazao31']
             flows.dropna(inplace=True)
-            dates = self.get_days(flows, date)
-            dfs.append(pd.DataFrame(list(flows), index=dates,
+            new_dates = self.get_days(flows, date)
+            dfs.append(pd.DataFrame(list(flows), index=new_dates,
                                     columns=['Vazao']))
         self.daily_flow = pd.concat(dfs, axis=0)
 

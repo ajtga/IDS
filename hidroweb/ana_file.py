@@ -62,6 +62,7 @@ class AnaFlow(AnaFile):
         self.df = super().get_df(self.multi_index)
         self.df.drop('Unnamed: 78', axis=1, inplace=True)
         self.vazoes_diarias = {}
+        self.vazoes_diarias_interpolado = {}
 
     @staticmethod
     def multi_index(df):
@@ -113,6 +114,17 @@ class AnaFlow(AnaFile):
 
             else:
                 print('\nNão há falhas.\n')
+
+    def interpolar(self):
+        for consistencia in self.vazoes_diarias:
+            print(consistencia.upper())
+            serie = self.vazoes_diarias[consistencia]
+            if serie.isnull().any():
+                if not serie.interpolate().isnull().any():
+                    print('\nSucesso na interpolação linear.\n')
+                    self.vazoes_diarias_interpolado[consistencia] = serie.interpolate()
+                else:
+                    print('\nFalha na interpolação linear.\n')
 
 
     def save_df(self):

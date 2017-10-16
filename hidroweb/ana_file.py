@@ -3,7 +3,8 @@ import zipfile
 import io
 import plotly
 import plotly.graph_objs as go
-from datetime import datetime
+from datetime import datetime, timedelta
+from calendar import monthrange
 
 
 class AnaFile:
@@ -60,32 +61,25 @@ class AnaFlow(AnaFile):
         super().__init__(file_name)
         self.df = super().get_df(self.multi_index)
         self.df.drop('Unnamed: 78', axis=1, inplace=True)
+        self.vazoes_diarias = {}
 
     @staticmethod
     def multi_index(df):
         df.rename(columns={'NivelConsistencia': 'Consist.'}, inplace=True)
-        df.set_index(['Consist.', 'Data'], inplace=True)
+        df.set_index(['Consist.', 'Data'], inplace=True)  # Quando isso é feito, há possibilidade de se perder linhas, já que o indice é único?
         del df['Hora']
         df.sort_index(inplace=True)
 
-    @staticmethod
-    def get_days(df, date):
-        i = list(df.index)
-        days = []
-        for day in i:
-            days.append(datetime(date.year, date.month, int(day[-2:])))
-        return days
-
-    def daily_df(self):
-        dates = list(self.df.index)
-        dfs = []
-        for date in dates:
-            flows = self.df.loc[date]['Vazao01':'Vazao31']
-            flows.dropna(inplace=True)
-            dates = self.get_days(flows, date)
-            dfs.append(pd.DataFrame(list(flows), index=dates,
-                                    columns=['Vazao']))
-        self.daily_flow = pd.concat(dfs, axis=0)
+    def vazao_diaria(self, consistencia):
+        nivel_consistencia = (None, 'Bruto', 'Consistido')
+        datas = list(self.df.loc[consistencia].index)
+        series = []
+        for data in datas:
+            ultimo_dia = monthrange(data.year, data.month)[1]
+            vazoes = self.df.loc[consistencia, data]['Vazao01':'Vazao{}'.format(ultimo_dia)]
+            datas = [data + timedelta(days=x) for x in range(ultimo_dia)]
+            series.append(pd.Series(list(vazoes), index=datas, name='Vazao'))
+        self.vazoes_diarias[nivel_consistencia[consistencia]] = pd.concat(series)
 
     def save_df(self):
         options = ('JSON', 'CSV')

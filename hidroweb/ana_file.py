@@ -71,15 +71,19 @@ class AnaFlow(AnaFile):
         df.sort_index(inplace=True)
 
     def vazao_diaria(self, consistencia):
-        nivel_consistencia = (None, 'Bruto', 'Consistido')
-        datas = list(self.df.loc[consistencia].index)
-        series = []
-        for data in datas:
-            ultimo_dia = monthrange(data.year, data.month)[1]
-            vazoes = self.df.loc[consistencia, data]['Vazao01':'Vazao{}'.format(ultimo_dia)]
-            datas = [data + timedelta(days=x) for x in range(ultimo_dia)]
-            series.append(pd.Series(list(vazoes), index=datas, name='Vazao'))
-        self.vazoes_diarias[nivel_consistencia[consistencia]] = pd.concat(series)
+        nivel_consistencia = (None, 'brutos', 'consistidos')
+        try:
+            datas = list(self.df.loc[consistencia].index)
+            df_vazoes = self.df.loc[consistencia][:]
+            series = []
+            for data in datas:
+                ultimo_dia = monthrange(data.year, data.month)[1]
+                vazoes = df_vazoes.loc[data, 'Vazao01':'Vazao{}'.format(ultimo_dia)]
+                datas = [data + timedelta(days=x) for x in range(ultimo_dia)]
+                series.append(pd.Series(list(vazoes), index=datas, name='Vazao'))
+            self.vazoes_diarias[nivel_consistencia[consistencia]] = pd.concat(series)
+        except KeyError:
+            print('\nNão há dados {} no DataFrame.\n'.format(nivel_consistencia[consistencia]))
 
     def save_df(self):
         options = ('JSON', 'CSV')

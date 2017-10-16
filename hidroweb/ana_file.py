@@ -3,7 +3,7 @@ import zipfile
 import io
 import plotly
 import plotly.graph_objs as go
-from datetime import datetime, timedelta
+from datetime import timedelta
 from calendar import monthrange
 
 

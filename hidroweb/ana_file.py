@@ -66,6 +66,8 @@ class AnaFlow(AnaFile):
 
     @staticmethod
     def multi_index(df):
+        if df.Data.duplicated().any():
+            print('\nHavia %s data(s) duplicada(s).\n' % df.Data.duplicated().sum())
         df.rename(columns={'NivelConsistencia': 'Consist.'}, inplace=True)
         df.set_index(['Consist.', 'Data'], inplace=True)
         del df['Hora']

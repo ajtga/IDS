@@ -66,7 +66,7 @@ class AnaFlow(AnaFile):
     @staticmethod
     def multi_index(df):
         df.rename(columns={'NivelConsistencia': 'Consist.'}, inplace=True)
-        df.set_index(['Consist.', 'Data'], inplace=True)  # Quando isso é feito, há possibilidade de se perder linhas, já que o indice é único?
+        df.set_index(['Consist.', 'Data'], inplace=True)
         del df['Hora']
         df.sort_index(inplace=True)
 
@@ -84,6 +84,16 @@ class AnaFlow(AnaFile):
             self.vazoes_diarias[nivel_consistencia[consistencia]] = pd.concat(series)
         except KeyError:
             print('\nNão há dados {} no DataFrame.\n'.format(nivel_consistencia[consistencia]))
+
+    def relatorio_disponibilidade(self):
+        for consistencia in self.vazoes_diarias:
+            print(consistencia.upper())
+            serie = self.vazoes_diarias[consistencia]
+            if serie.isnull().any():
+                print('\nHá %s valores faltando de um total de %s. Ou seja, %.2f%% dos dados.\n' % (
+                      serie.isnull().sum(), len(serie), serie.isnull().sum()/len(serie)*100))
+            else:
+                print('\nNão há falhas.\n')
 
     def save_df(self):
         options = ('JSON', 'CSV')

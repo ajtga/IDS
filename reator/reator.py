@@ -9,7 +9,15 @@ class Reator:
         self.arquivo = xlrd.open_workbook(self.name+'.xlsx')
 
     def get_df(self, numero_planilha):
-        planilha = self.arquivo.sheets()[numero_planilha]
+        try:
+            if numero_planilha < 0:
+                print('Numero invalido!')
+                return None
+            planilha = self.arquivo.sheets()[numero_planilha]
+        except:
+            if numero_planilha > 7:
+                print('Só existem 8 planilhas.')
+            return None
         cabecalho = []
 
         first_line = planilha.row_values(0)

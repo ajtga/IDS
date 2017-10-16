@@ -15,7 +15,7 @@ class Reator:
                 return None
             planilha = self.arquivo.sheets()[numero_planilha]
         except:
-            if numero_planilha > 7:
+            if numero_planilha > 8:
                 print('Só existem 8 planilhas.')
             return None
         cabecalho = []

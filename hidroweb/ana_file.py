@@ -94,7 +94,7 @@ class AnaFlow(AnaFile):
         for consistencia in self.vazoes_diarias:
             print(consistencia.upper())
             serie = self.vazoes_diarias[consistencia]
-            if serie.isnull().any():
+            if serie.hasnans:
                 print('\nHá %s valores faltando de um total de %s. Ou seja, %.2f%% dos dados.\n' % (
                       serie.isnull().sum(), len(serie), serie.isnull().sum()/len(serie)*100))
 

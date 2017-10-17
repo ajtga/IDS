@@ -65,6 +65,7 @@ class AnaFlow(AnaFile):
         self.df.drop('Unnamed: 78', axis=1, inplace=True)
         self.vazoes_diarias = {}
         self.vazoes_diarias_interpolado = {}
+        self.media_vazoes_diarias = {}
 
     @staticmethod
     def multi_index(df):
@@ -159,6 +160,14 @@ class AnaFlow(AnaFile):
                     self.vazoes_diarias_interpolado[consistencia] = serie.interpolate()
                 else:
                     print('\nFalha na interpolação linear.\n')
+
+    def reduzir_vazoes_diarias(self):
+        for consistencia in self.vazoes_diarias_interpolado:
+            print(consistencia.upper())
+            serie = self.vazoes_diarias[consistencia]
+            grupos_mensais = serie.groupby(pd.TimeGrouper(freq='M'))
+            statisticas = grupos_mensais.describe()
+            self.media_vazoes_diarias[consistencia] = statisticas['mean']
 
     def save_df(self):
         options = ('JSON', 'CSV')

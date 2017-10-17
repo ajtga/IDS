@@ -1,8 +1,10 @@
+import math
 import pandas as pd
 import zipfile
 import io
 import plotly
 import plotly.graph_objs as go
+import plotly.figure_factory as ff
 from datetime import timedelta
 from calendar import monthrange
 
@@ -112,6 +114,34 @@ class AnaFlow(AnaFile):
                 )
                 plotly.offline.plot({'data': data, 'layout': layout})
 
+                df = []
+                flag = True
+                frame = serie.to_frame()
+                test = 'test1'
+                for index, i in frame.iterrows():
+                    if flag:
+                        if not math.isnan(i):
+                            flag = False
+                            start = index
+                    if math.isnan(i):
+                        if not flag:
+                            flag = True
+                            finish = index
+                            df.append(dict(Task='Disponibilidade', Start=start,
+                            Finish=finish, Resource=test))
+                            if test == 'test1':
+                                test = 'test2'
+                            else:
+                                test = 'test1'
+                df.append(dict(Task='Disponibilidade', Start=start, Finish=index,
+                Resource=test))
+
+                colors = {'test1': 'rgb(0, 0, 0)', 'test2': 'rgb(80, 80, 80)'}
+                fig = ff.create_gantt(df, index_col='Resource',
+                group_tasks=True, colors=colors)
+                plotly.offline.plot(fig)
+
+
                 input('Pressione ENTER para continuar.\n')
 
             else:
@@ -121,9 +151,9 @@ class AnaFlow(AnaFile):
         for consistencia in self.vazoes_diarias:
             print(consistencia.upper())
             serie = self.vazoes_diarias[consistencia]
-            if serie.isnull().any():
-                if not serie.interpolate().isnull().any():
-                    print('\nSucesso na interpolação linear.\n')
+            if not serie.interpolate().isnull().any():
+                print('\nSucesso na interpolação linear.\n')
+                if serie.isnull().any():
                     self.vazoes_diarias_interpolado[consistencia] = serie.interpolate()
                 else:
                     print('\nFalha na interpolação linear.\n')

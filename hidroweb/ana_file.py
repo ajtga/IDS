@@ -153,12 +153,14 @@ class AnaFlow(AnaFile):
         for consistencia in self.vazoes_diarias:
             print(consistencia.upper())
             serie = self.vazoes_diarias[consistencia]
-            if not serie.interpolate().isnull().any():
+            if not serie.interpolate().hasnans:
                 print('\nSucesso na interpolação linear.\n')
-                if serie.isnull().any():
+                if serie.hasnans:
                     self.vazoes_diarias_interpolado[consistencia] = serie.interpolate()
                 else:
                     print('\nFalha na interpolação linear.\n')
+            else:
+                print('\nNão há necessidade de interpolação, pois não há (uma quantidade signifivativa?) falhas na série.\n')
 
     def save_df(self):
         options = ('JSON', 'CSV')

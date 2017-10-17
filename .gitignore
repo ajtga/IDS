@@ -10,3 +10,7 @@
 *.json
 
 hidroweb/__pycache__/
+
+reator/__pycache__/
+
+*.pyc

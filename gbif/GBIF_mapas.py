@@ -60,7 +60,8 @@ mag_sp.sort_values("species", inplace=True)
 # Criando um id para cada espécie
 # %%
 mag_sp['id'] = mag_sp.groupby("species").ngroup()
-
+mag_sp = mag_sp.drop_duplicates(['decimalLatitude', 'decimalLongitude', 'species'])
+mag_sp = mag_sp[mag_sp['decimalLatitude'] != '0']
 mapa(mag_sp)
 
 # Removendo registros duplicados (coordenadas repetidas)

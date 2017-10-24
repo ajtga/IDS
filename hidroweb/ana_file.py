@@ -80,8 +80,8 @@ class AnaFlow(AnaFile):
     def vazao_diaria(self, consistencia):
         nivel_consistencia = (None, 'brutos', 'consistidos')
         try:
-            datas = list(self.df.loc[consistencia].index)
-            df_vazoes = self.df.loc[consistencia][:]
+            df_vazoes = self.df.loc[consistencia].groupby(self.df.loc[consistencia].index).first()
+            datas = list(df_vazoes.index)
             series = []
             for data in datas:
                 ultimo_dia = monthrange(data.year, data.month)[1]

@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import pandas as pd
 import zipfile
 import io
@@ -162,12 +163,14 @@ class AnaFlow(AnaFile):
                     print('\nFalha na interpolação linear.\n')
 
     def reduzir_vazoes_diarias(self):
+
+        def resampler_customizado(array):
+            return np.mean(array)
+
         for consistencia in self.vazoes_diarias_interpolado:
-            print(consistencia.upper())
-            serie = self.vazoes_diarias[consistencia]
-            grupos_mensais = serie.groupby(pd.TimeGrouper(freq='M'))
-            statisticas = grupos_mensais.describe()
-            self.media_vazoes_diarias[consistencia] = statisticas['mean']
+            self.media_vazoes_diarias[consistencia] = self.vazoes_diarias_interpolado[consistencia].resample(
+                'M').apply(resampler_customizado)
+            print(consistencia.upper(), 'OK\n')
 
     def save_df(self):
         options = ('JSON', 'CSV')

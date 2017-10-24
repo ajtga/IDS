@@ -76,7 +76,7 @@ class AnaFlow(AnaFile):
     @staticmethod
     def multi_index(df):
         if df.Data.duplicated().any():
-            print('\nHavia %s data(s) duplicada(s).\n' % df.Data.duplicated().sum())
+            print('\nHavia %s data(s) duplicada(s).' % df.Data.duplicated().sum())
         df.rename(columns={'NivelConsistencia': 'Consist.'}, inplace=True)
         df.set_index(['Consist.', 'Data'], inplace=True)
         del df['Hora']
@@ -158,16 +158,15 @@ class AnaFlow(AnaFile):
 
     def __interpolar(self):
         for consistencia in self.vazoes_diarias:
-            print(consistencia.upper())
             serie = self.vazoes_diarias[consistencia]
             if not serie.interpolate().hasnans:
-                print('\nSucesso na interpolação linear.\n')
+                print('\nSucesso na interpolação linear dos dados {}.'.format(consistencia))
                 if serie.hasnans:
                     self.vazoes_diarias_interpolado[consistencia] = serie.interpolate()
                 else:
-                    print('\nFalha na interpolação linear.\n')
+                    print('\nFalha na interpolação linear dos dados {}.'.format(consistencia))
             else:
-                print('\nNão há necessidade de interpolação, pois não há (uma quantidade signifivativa?) falhas na série.\n')
+                print('\nNão houve necessidade de interpolação, pois não há (uma quantidade signifivativa?) falhas na série.\n')
 
     def __reduzir_vazoes_diarias(self):
 
@@ -177,7 +176,7 @@ class AnaFlow(AnaFile):
         for consistencia in self.vazoes_diarias_interpolado:
             self.media_vazoes_diarias[consistencia] = self.vazoes_diarias_interpolado[consistencia].resample(
                 'M').apply(resampler_customizado)
-            print(consistencia.upper(), 'OK\n')
+            print('\nA série com dados {} de vazoes diarias foi reduzida com sucesso.'.format(consistencia))
 
     def save_df(self):
         options = ('JSON', 'CSV')

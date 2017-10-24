@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import pandas as pd
 import zipfile
 import io
@@ -65,6 +66,7 @@ class AnaFlow(AnaFile):
         self.df.drop('Unnamed: 78', axis=1, inplace=True)
         self.vazoes_diarias = {}
         self.vazoes_diarias_interpolado = {}
+        self.media_vazoes_diarias = {}
 
     @staticmethod
     def multi_index(df):
@@ -161,6 +163,16 @@ class AnaFlow(AnaFile):
                     print('\nFalha na interpolação linear.\n')
             else:
                 print('\nNão há necessidade de interpolação, pois não há (uma quantidade signifivativa?) falhas na série.\n')
+
+    def reduzir_vazoes_diarias(self):
+
+        def resampler_customizado(array):
+            return np.mean(array)
+
+        for consistencia in self.vazoes_diarias_interpolado:
+            self.media_vazoes_diarias[consistencia] = self.vazoes_diarias_interpolado[consistencia].resample(
+                'M').apply(resampler_customizado)
+            print(consistencia.upper(), 'OK\n')
 
     def save_df(self):
         options = ('JSON', 'CSV')

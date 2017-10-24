@@ -77,7 +77,7 @@ class AnaFlow(AnaFile):
         del df['Hora']
         df.sort_index(inplace=True)
 
-    def vazao_diaria(self, consistencia):
+    def __vazao_diaria(self, consistencia):
         nivel_consistencia = (None, 'brutos', 'consistidos')
         try:
             df_vazoes = self.df.loc[consistencia].groupby(self.df.loc[consistencia].index).first()
@@ -151,7 +151,7 @@ class AnaFlow(AnaFile):
             else:
                 print('\nNão há falhas.\n')
 
-    def interpolar(self):
+    def __interpolar(self):
         for consistencia in self.vazoes_diarias:
             print(consistencia.upper())
             serie = self.vazoes_diarias[consistencia]
@@ -164,7 +164,7 @@ class AnaFlow(AnaFile):
             else:
                 print('\nNão há necessidade de interpolação, pois não há (uma quantidade signifivativa?) falhas na série.\n')
 
-    def reduzir_vazoes_diarias(self):
+    def __reduzir_vazoes_diarias(self):
 
         def resampler_customizado(array):
             return np.mean(array)

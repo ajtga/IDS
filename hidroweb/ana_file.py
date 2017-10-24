@@ -68,6 +68,11 @@ class AnaFlow(AnaFile):
         self.vazoes_diarias_interpolado = {}
         self.media_vazoes_diarias = {}
 
+        self.__vazao_diaria(1)
+        self.__vazao_diaria(2)
+        self.__interpolar()
+        self.__reduzir_vazoes_diarias()
+
     @staticmethod
     def multi_index(df):
         if df.Data.duplicated().any():

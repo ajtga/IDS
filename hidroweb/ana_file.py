@@ -105,22 +105,6 @@ class AnaFlow(AnaFile):
                 print('\nHá %s valores faltando de um total de %s. Ou seja, %.2f%% dos dados.\n' % (
                       serie.isnull().sum(), len(serie), serie.isnull().sum()/len(serie)*100))
 
-                trace1 = go.Bar(
-                    x=['dados'],
-                    y=[serie.isnull().sum()],
-                    name='Falhas'
-                )
-                trace2 = go.Bar(
-                    x=['dados'],
-                    y=[len(serie)],
-                    name='Quantidade de dados'
-                )
-                data = [trace1, trace2]
-                layout = go.Layout(
-                    barmode='group'
-                )
-                plotly.offline.plot({'data': data, 'layout': layout})
-
                 try:
                     df = []
                     flag = True

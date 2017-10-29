@@ -178,17 +178,18 @@ class AnaFlow(AnaFile):
                 'M').apply(resampler_customizado)
             print('\nA série com dados {} de vazoes diarias foi reduzida com sucesso.'.format(consistencia))
 
-    def save_df(self):
+    def salvar_df(self):
         options = ('JSON', 'CSV')
         for i, option in enumerate(options):
             print('%s - %s' % (i, option))
         option = int(input('\nChoose an option: '))
 
         if option == 0:
-            self.df.to_json(self.name.lower() + str(self.station) + '.json',
-                            date_format='iso')
+            self.vazoes_diarias_interpolado['consistidos'].to_json('vazoes_diarias_' + str(self.station) + '.json',
+                                                                   date_format='iso')
         elif option == 1:
             self.df.to_csv(self.name.lower() + str(self.station) + '.csv')
+            self.vazoes_diarias_interpolado['consistidos'].to_csv('vazoes_diarias_' + str(self.station) + '.csv')
         else:
             print('Invalid option. Try again.')
 

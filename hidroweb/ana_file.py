@@ -215,6 +215,24 @@ class AnaFlow(AnaFile):
                       )
         plotly.offline.plot({'data': data, 'layout': layout})
 
+    def plotar_vazoes_diarias(self):
+
+        data = []
+
+        trace0 = go.Scatter(x=self.vazoes_diarias['brutos'].index,
+                            y=self.vazoes_diarias['brutos'].values,
+                            name="Raw")
+        data.append(trace0)
+        trace1 = go.Scatter(x=self.vazoes_diarias['consistidos'].index,
+                            y=self.vazoes_diarias['consistidos'].values,
+                            name="Consistent")
+        data.append(trace1)
+        layout = dict(title='Station ' + str(self.station),
+                      xaxis=dict(title='Date'),
+                      yaxis=dict(title='Flow (m³/s)'),
+                      )
+        plotly.offline.plot({'data': data, 'layout': layout})
+
 
 class AnaRain(AnaFile):
 

@@ -100,45 +100,32 @@ class AnaFlow(AnaFile):
     def relatorio_disponibilidade(self):
         for consistencia in self.vazoes_diarias:
             print(consistencia.upper())
-            serie = self.vazoes_diarias[consistencia]
-            if serie.hasnans:
-                print('\nHá %s valores faltando de um total de %s. Ou seja, %.2f%% dos dados.\n' % (
-                      serie.isnull().sum(), len(serie), serie.isnull().sum()/len(serie)*100))
+            serie = pd.Series(self.vazoes_diarias[consistencia].dropna().index)
+            periodos = []
+            comeco = serie[0]
+            comeca = False
+            cor = 'preto'
+            for i, item in serie.iteritems():
+                if i == len(serie) - 1 or i == 0:
+                    continue
+                if item - serie[i - 1] != timedelta(days=1) and comeca:
+                    comeco = item
+                    comeca = False
+                if serie[i + 1] - item != timedelta(days=1) and not comeca:
+                    fim = item
+                    comeca = True
+                    periodos.append(dict(Task='Disponibilidade', Start=comeco, Finish=fim, Resource=cor))
+                    if cor == 'preto':
+                        cor = 'cinza'
+                    else:
+                        cor = 'preto'
+            periodos.append(dict(Task='Disponibilidade', Start=comeco, Finish=item, Resource=cor))
 
-                try:
-                    df = []
-                    flag = True
-                    frame = serie.to_frame()
-                    test = 'test1'
-                    for index, i in frame.iterrows():
-                        if flag:
-                            if not math.isnan(i):
-                                flag = False
-                                start = index
-                        if math.isnan(i):
-                            if not flag:
-                                flag = True
-                                finish = index
-                                df.append(dict(Task='Disponibilidade', Start=start,
-                                Finish=finish, Resource=test))
-                                if test == 'test1':
-                                    test = 'test2'
-                                else:
-                                    test = 'test1'
-                    df.append(dict(Task='Disponibilidade', Start=start, Finish=index,
-                    Resource=test))
+            colors = {'preto': 'rgb(0, 0, 0)', 'cinza': 'rgb(80, 80, 80)'}
+            fig = ff.create_gantt(periodos, index_col='Resource', group_tasks=True, colors=colors)
+            plotly.offline.plot(fig)
 
-                    colors = {'test1': 'rgb(0, 0, 0)', 'test2': 'rgb(80, 80, 80)'}
-                    fig = ff.create_gantt(df, index_col='Resource',
-                    group_tasks=True, colors=colors)
-                    plotly.offline.plot(fig)
-                except:
-                    print('Não foi possível obter o gráfico de Gantt para esse conjunto de dados.\n')
-
-                input('Pressione ENTER para continuar.\n')
-
-            else:
-                print('\nNão há falhas.\n')
+            input('Pressione ENTER para continuar.\n')
 
     def __interpolar(self):
         for consistencia in self.vazoes_diarias:

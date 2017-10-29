@@ -192,23 +192,18 @@ class AnaFlow(AnaFile):
         else:
             print('Invalid option. Try again.')
 
-    def plot_line(self):
-        """This method plots a line graph of the DataFrame"""
+    def plotar_vazoes_maximas(self):
 
-        # Plots 'NivelConsistencia' 1 and 2:
         data = []
-        try:
-            trace0 = go.Scatter(x=self.df.loc[1].index,
-                                y=self.df.loc[1]['Maxima'],
-                                name="Raw")
-            data.append(trace0)
-        except KeyError:
-            print('Não há dados brutos no DataFrame.')
-        finally:
-            trace1 = go.Scatter(x=self.df.loc[2].index,
-                                y=self.df.loc[2]['Maxima'],
-                                name="Consistent")
-            data.append(trace1)
+
+        trace0 = go.Scatter(x=self.df.loc[1].index,
+                            y=self.df.loc[1]['Maxima'],
+                            name="Raw")
+        data.append(trace0)
+        trace1 = go.Scatter(x=self.df.loc[2].index,
+                            y=self.df.loc[2]['Maxima'],
+                            name="Consistent")
+        data.append(trace1)
         layout = dict(title='Station ' + str(self.station),
                       xaxis=dict(title='Date'),
                       yaxis=dict(title='Maximum Flow (m³/s)'),

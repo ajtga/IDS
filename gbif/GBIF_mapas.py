@@ -12,6 +12,37 @@ import os
 import numpy as np
 from plotly.graph_objs import *
 from plotly.offline import plot
+import requests
+import pandas as pd
+
+
+def dados_ocorrencia(ano, quantidade):
+    """Baixa os dados inserindo o ano inicial e a quantidade de dados"""
+    api = 'http://api.gbif.org/v1/'
+    lista_dfs = []
+    offset = 0
+    iteracoes = int(quantidade/300)
+    resto = quantidade % 300
+    for i in range(iteracoes):
+        ocorrencia = ('occurrence/search?year={}&limit=300&offset={}'.format(ano, offset))
+        request = requests.get(api + ocorrencia)
+        try:
+            lista_dfs.append(pd.DataFrame(request.json()['results']))
+        except:
+            print('Erro')
+        finally:
+            print('{} de {}.'.format(offset, quantidade))
+            offset += 300
+    ocorrencia = 'occurrence/search?year={}&limit={}&offset={}'.format(ano, resto, offset)
+    request = requests.get(api + ocorrencia)
+    try:
+        lista_dfs.append(pd.DataFrame(request.json()['results']))
+    except:
+        print('Erro no ultimo')
+    finally:
+        df = pd.concat(lista_dfs)
+        df.index = df.gbifID
+        return df
 
 
 def mapa(df):
@@ -29,15 +60,9 @@ def mapa(df):
     plot(fig)
 
 
-# Definindo o diretório
-#
-try:
-    os.chdir("C:\\Users\\albuq\\OneDrive\\UFAL\\ENGENHARIA_AMBIENTAL_E_SANITÁRIA\\QUINTO_PERIODO\\INTRODUCAO_A_CIENCIA DE DADOS\\CODANDO\\DADOS")
-except:
-    pass
-# Importando os dados
-# %% #problema algumas linhas #
-mag = pd.read_csv("df_novo.zip", compression='zip', sep=";", error_bad_lines=False, low_memory=False)
+ano = int(input("Digite o ano inicial: "))
+quantidade=int(input("Quantidade: "))
+mag = dados_ocorrencia(ano, quantidade)
 
 # Colunas
 # %%
@@ -61,7 +86,7 @@ mag_sp.sort_values("species", inplace=True)
 # %%
 mag_sp['id'] = mag_sp.groupby("species").ngroup()
 mag_sp = mag_sp.drop_duplicates(['decimalLatitude', 'decimalLongitude', 'species'])
-mag_sp = mag_sp[mag_sp['decimalLatitude'] != '0']
+#mag_sp = mag_sp[mag_sp['decimalLatitude'] != '0']
 mapa(mag_sp)
 
 # Removendo registros duplicados (coordenadas repetidas)

@@ -76,7 +76,10 @@ del mag
 
 # Selecionando colunas
 # %%
-mag_sp = mag_sp.loc[:, ["gbifID", "basisOfRecord", "eventDate", "year", "month", "date", "stateProvince", "municipality", "locality", "decimalLatitude", "decimalLongitude", "scientificName", "Kingdom", "phylum", "class", "order", "family", "genus", "species"]]
+mag_sp = mag_sp.loc[:, ["gbifID", "basisOfRecord", "eventDate", "year",
+ "month", "date", "stateProvince", "municipality", "locality",
+ "decimalLatitude", "decimalLongitude", "scientificName", "Kingdom", "phylum",
+  "class", "order", "family", "genus", "species"]]
 
 # Ordenado pelos nomes das espécies
 # %%

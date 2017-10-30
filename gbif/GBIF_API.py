@@ -24,4 +24,6 @@ def dados_ocorrencia(ano, quantidade=300):
     except:
         print('Erro no ultimo')
     finally:
-        return pd.concat(lista_dfs)
+        df = pd.concat(lista_dfs)
+        df.index = df.gbifID
+        return df

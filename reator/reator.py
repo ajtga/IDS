@@ -1,5 +1,9 @@
 import pandas as pd
 import xlrd
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
 
 
 class Reator:
@@ -15,7 +19,7 @@ class Reator:
                 return None
             planilha = self.arquivo.sheets()[numero_planilha]
         except:
-            if numero_planilha > 8:
+            if numero_planilha > 7:
                 print('Só existem 8 planilhas.')
             return None
         cabecalho = []
@@ -29,6 +33,49 @@ class Reator:
                 coluna = first_line[i-1] + ' - ' + second_line[i]
             cabecalho.append(coluna)
 
-        dataframe = pd.read_excel(self.name+'.xlsx', sheetname=numero_planilha,
+        self.dataframe = pd.read_excel(self.name+'.xlsx', sheetname=numero_planilha,
         skiprows=2, names=cabecalho)
-        return dataframe
+        return self.dataframe
+
+    def graf_table(self):
+        try:
+            df = self.dataframe
+        except:
+            print('Menu das tabelas:')
+            print('0 - R2CA\n1 - R2SA\n2 - R4CA\n3 - R4SA\n4 - R10CA')
+            print('5 - R10SA\n6 - R25CA\n7 - R25SA')
+            planilha = int(input("Numero da Planilha: "))
+            df = self.get_df(planilha)
+
+        app = dash.Dash()
+
+        lista_col = []
+        for i in df.columns:
+            if "Tempo" not in i:
+                if "dados" not in i:
+                    lista_col.append({'label': i, 'value': i})
+
+        app.layout = html.Div([
+        html.H1('Graficos da planilha'),
+        dcc.Dropdown(
+            id='my-dropdown',
+            options=lista_col,
+            value='TDH - TDH'
+            ),
+        dcc.Graph(id='my-graph')
+        ])
+
+        @app.callback(Output('my-graph', 'figure'), [Input('my-dropdown', 'value')])
+        def update_graph(selected_dropdown_value):
+            df = self.dataframe
+            return {
+                'data': [{
+                'x': df['Tempo - Data'],
+                'y': df[selected_dropdown_value]
+                }]
+                }
+        app.run_server()
+
+
+
+        #print(df)

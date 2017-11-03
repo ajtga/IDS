@@ -35,7 +35,17 @@ class Reator:
 
         self.dataframe = pd.read_excel(self.name+'.xlsx', sheetname=numero_planilha,
         skiprows=2, names=cabecalho)
-        return self.dataframe
+
+        app = dash.Dash()
+
+        app.layout = html.Div(children=[
+        html.H1(children='Dados do Lucena'),
+        html.Table([html.Tr([html.Th(col) for col in self.dataframe.columns])] +
+        [html.Tr([html.Td(self.dataframe.iloc[i][col]) for col in self.dataframe.columns
+        ]) for i in range(len(self.dataframe))]
+        )])
+
+        app.run_server()
 
     def graf_table(self):
         print('Menu das tabelas:')

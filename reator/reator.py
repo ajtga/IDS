@@ -38,14 +38,13 @@ class Reator:
         return self.dataframe
 
     def graf_table(self):
-        try:
-            df = self.dataframe
-        except:
-            print('Menu das tabelas:')
-            print('0 - R2CA\n1 - R2SA\n2 - R4CA\n3 - R4SA\n4 - R10CA')
-            print('5 - R10SA\n6 - R25CA\n7 - R25SA')
-            planilha = int(input("Numero da Planilha: "))
-            df = self.get_df(planilha)
+        print('Menu das tabelas:')
+        lista_planilha = ['R2CA', 'R2SA', 'R4CA', 'R4SA', 'R10CA', 'R10SA',
+        'R25CA', 'R25SA']
+        for i in range(8):
+            print('%i - %s' % (i+1, lista_planilha[i]))
+        planilha = int(input("Numero da Planilha: "))-1
+        df = self.get_df(planilha)
 
         app = dash.Dash()
 
@@ -55,8 +54,11 @@ class Reator:
                 if "dados" not in i:
                     lista_col.append({'label': i, 'value': i})
 
-        app.layout = html.Div([
-        html.H1('Graficos da planilha'),
+        app.layout = html.Div(
+        children=[html.H1(children='Graficos da planilha',
+        style={'textAlign': 'center'}),
+        html.Div(children='Graficos em linha da planilha %s' % lista_planilha[planilha],
+        style={'textAlign': 'center'}),
         dcc.Dropdown(
             id='my-dropdown',
             options=lista_col,

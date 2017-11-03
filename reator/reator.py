@@ -76,6 +76,44 @@ class Reator:
                 }
         app.run_server()
 
+    def box_table(self):
+        """Esta função acessa todas as tabelas para
+        produzir os GraficosBoxPlot."""
 
+        lista_table = ['R2CA', 'R2SA', 'R4CA', 'R4SA', 'R10CA', 'R10SA',
+         'R25CA', 'R25SA']
+        df = self.get_df(0)
+        app = dash.Dash()
 
-        #print(df)
+        lista_col = []
+        for i in df.columns:
+            if "Tempo" not in i:
+                if "dados" not in i:
+                    lista_col.append({'label': i, 'value': i})
+
+        app.layout = html.Div([
+        html.H1('BoxPlot dos Dados'),
+        dcc.Dropdown(
+            id='my-dropdown',
+            options=lista_col,
+            value='TDH - TDH'
+            ),
+        dcc.Graph(id='my-graph')
+        ])
+
+        @app.callback(Output('my-graph', 'figure'), [Input('my-dropdown', 'value')])
+        def update_graph(selected_dropdown_value):
+            new_df = pd.DataFrame()
+            for i in range(8):
+                try:
+                    new_df[lista_table[i]] = self.get_df(i)[selected_dropdown_value]
+                except:
+                    select = selected_dropdown_value.split()
+                    new_df[lista_table[i]] = self.get_df(i)[' '.join(select)]
+            data = []
+            for i in new_df.columns:
+                data.append({'y': new_df[i], 'name': i, 'type': 'box'})
+            return {
+            'data': data
+        }
+        app.run_server()

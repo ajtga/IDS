@@ -93,8 +93,15 @@ class Reator:
                 if "dados" not in i:
                     lista_col.append({'label': i, 'value': i})
 
-        app.layout = html.Div([
-        html.H1('BoxPlot dos Dados'),
+        app.layout = html.Div(children=[
+        html.H1(children='BoxPlot dos Dados',
+        style={
+        'textAlign': 'center'
+        }),
+        html.Div(children="Grafico BoxPlot utilizando todas as tabelas",
+        style={
+        'textAlign': 'center'
+        }),
         dcc.Dropdown(
             id='my-dropdown',
             options=lista_col,

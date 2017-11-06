@@ -11,15 +11,22 @@ class Reator:
     def __init__(self, file_name='dados_h2_completo'):
         self.name = file_name
         self.arquivo = xlrd.open_workbook(self.name+'.xlsx')
+        self.dataframe = None
+
+        lista_planilha = ['R2CA', 'R2SA', 'R4CA', 'R4SA', 'R10CA', 'R10SA',
+        'R25CA', 'R25SA']
+        print("Planilhas:")
+        for i in range(8):
+            print('%i - %s' % (i+1, lista_planilha[i]))
 
     def get_df(self, numero_planilha):
         try:
             if numero_planilha < 0:
                 print('Numero invalido!')
                 return None
-            planilha = self.arquivo.sheets()[numero_planilha]
+            planilha = self.arquivo.sheets()[numero_planilha-1]
         except:
-            if numero_planilha > 7:
+            if numero_planilha > 8:
                 print('Só existem 8 planilhas.')
             return None
         cabecalho = []
@@ -33,8 +40,20 @@ class Reator:
                 coluna = first_line[i-1] + ' - ' + second_line[i]
             cabecalho.append(coluna)
 
-        self.dataframe = pd.read_excel(self.name+'.xlsx', sheetname=numero_planilha,
+        self.dataframe = pd.read_excel(self.name+'.xlsx', sheetname=numero_planilha-1,
         skiprows=2, names=cabecalho)
+
+        return self.dataframe
+
+    def tabela(self):
+
+        print('Menu das tabelas:')
+        lista_planilha = ['R2CA', 'R2SA', 'R4CA', 'R4SA', 'R10CA', 'R10SA',
+        'R25CA', 'R25SA']
+        for i in range(8):
+            print('%i - %s' % (i+1, lista_planilha[i]))
+        planilha = int(input("Numero da Planilha: "))
+        df = self.get_df(planilha)
 
         app = dash.Dash()
 
@@ -53,7 +72,7 @@ class Reator:
         'R25CA', 'R25SA']
         for i in range(8):
             print('%i - %s' % (i+1, lista_planilha[i]))
-        planilha = int(input("Numero da Planilha: "))-1
+        planilha = int(input("Numero da Planilha: "))
         df = self.get_df(planilha)
 
         app = dash.Dash()
@@ -67,7 +86,7 @@ class Reator:
         app.layout = html.Div(
         children=[html.H1(children='Graficos da planilha',
         style={'textAlign': 'center'}),
-        html.Div(children='Graficos em linha da planilha %s' % lista_planilha[planilha],
+        html.Div(children='Graficos em linha da planilha %s' % lista_planilha[planilha-1],
         style={'textAlign': 'center'}),
         dcc.Dropdown(
             id='my-dropdown',
@@ -94,7 +113,9 @@ class Reator:
 
         lista_table = ['R2CA', 'R2SA', 'R4CA', 'R4SA', 'R10CA', 'R10SA',
          'R25CA', 'R25SA']
-        df = self.get_df(0)
+
+        df = self.get_df(1)
+
         app = dash.Dash()
 
         lista_col = []
@@ -125,10 +146,10 @@ class Reator:
             new_df = pd.DataFrame()
             for i in range(8):
                 try:
-                    new_df[lista_table[i]] = self.get_df(i)[selected_dropdown_value]
+                    new_df[lista_table[i]] = self.get_df(i+1)[selected_dropdown_value]
                 except:
                     select = selected_dropdown_value.split()
-                    new_df[lista_table[i]] = self.get_df(i)[' '.join(select)]
+                    new_df[lista_table[i]] = self.get_df(i+1)[' '.join(select)]
             data = []
             for i in new_df.columns:
                 data.append({'y': new_df[i], 'name': i, 'type': 'box'})
